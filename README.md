@@ -156,7 +156,72 @@ Dashboard obsahuje `5 vizualizácií`, ktoré poskytujú základný prehľad o k
 </p>
 
 ---
+Graf 1: Počet vysielaní pre každú spoločnosť
 
+Táto vizualizácia zobrazuje počet odvysielaných reklám pre jednotlivé spoločnosti. Umožňuje identifikovať, ktoré spoločnosti sú najaktívnejšie v reklamnom vysielaní. Z grafu je zrejmé, že niektoré spoločnosti dominujú v počte vysielaní, čo môže naznačovať silnejšiu marketingovú stratégiu alebo väčší reklamný rozpočet.
+
+SELECT
+    dcom.company_name,
+    COUNT(fb.cm_log_id) AS broadcast_count
+FROM fact_broadcast fb
+JOIN dim_commercial dcom ON fb.dim_commersial_key = dcom.cm_base_id
+GROUP BY dcom.company_name
+ORDER BY broadcast_count DESC;
+
+Graf 2: Priemerné trvanie reklám podľa kategórie
+
+Graf znázorňuje priemernú dĺžku reklám v sekundách pre jednotlivé kategórie. Vďaka tejto vizualizácii je možné porovnať, ktoré kategórie využívajú dlhšie reklamné spoty. Výsledky ukazujú, že niektoré kategórie majú výrazne dlhšie reklamy než ostatné.
+
+SELECT
+    c.category AS category,
+    ROUND(AVG(DATEDIFF('second','00:00:00'::TIME, fb.duration)), 2) AS avg_duration_seconds
+FROM fact_broadcast fb
+JOIN dim_category c ON fb.category_key = c.category
+GROUP BY c.category
+ORDER BY avg_duration_seconds DESC;
+
+Graf 3: Počet vysielaní pre značky (Top 5)
+
+Táto vizualizácia zobrazuje päť značiek s najvyšším počtom odvysielaných reklám. Umožňuje rýchlo identifikovať najviditeľnejšie značky v televíznom priestore. Takéto značky majú vysokú mieru expozície, čo môže ovplyvňovať povedomie spotrebiteľov.
+
+SELECT
+    dcom.brand_name,
+    COUNT(fb.cm_log_id) AS broadcast_count
+FROM fact_broadcast fb
+JOIN dim_commercial dcom ON fb.dim_commersial_key = dcom.cm_base_id
+GROUP BY dcom.brand_name
+ORDER BY broadcast_count DESC
+LIMIT 5;
+
+Graf 4: Počet vysielaní pre každý produkt
+
+Graf znázorňuje počet odvysielaných reklám pre jednotlivé produkty. Umožňuje analyzovať, ktoré konkrétne produkty sú najviac propagované. Výsledky naznačujú, že reklamná stratégia sa často sústreďuje len na vybrané produkty z portfólia spoločnosti.
+
+SELECT
+    dcom.product_name,
+    COUNT(fb.cm_log_id) AS broadcast_count
+FROM fact_broadcast fb
+JOIN dim_commercial dcom ON fb.dim_commersial_key = dcom.cm_base_id
+GROUP BY dcom.product_name
+ORDER BY broadcast_count DESC
+LIMIT 10;
+
+Graf 5: Počet reklám a unikátnych značiek podľa stanice
+
+Táto vizualizácia porovnáva celkový počet reklám a počet unikátnych značiek vysielaných na jednotlivých televíznych staniciach. Umožňuje analyzovať rozmanitosť reklamného obsahu na staniciach. Niektoré stanice vysielajú veľké množstvo reklám, no s nižšou diverzitou značiek, zatiaľ čo iné majú pestrejšiu ponuku.
+
+SELECT
+    ds.broadcast_station_name,
+    COUNT(fb.cm_log_id) AS total_broadcasts,
+    COUNT(DISTINCT dc.brand_name) AS unique_brands
+FROM fact_broadcast fb
+JOIN dim_station ds ON fb.station_id = ds.broadcast_station_id
+JOIN dim_commercial dc ON fb.dim_commersial_key = dc.cm_base_id
+GROUP BY ds.broadcast_station_name
+ORDER BY total_broadcasts DESC;
+
+
+Dashboard poskytuje ucelený pohľad na reklamné vysielanie a umožňuje efektívne porovnávať aktivity spoločností, značiek a televíznych staníc. Vizualizácie sú vhodné pre analytické aj strategické rozhodovanie v oblasti marketingu.
 ---
 
 **Autors:** Yaroslav Besschotnov, Danylo Vinnytskyi

@@ -13,8 +13,6 @@ CREATE OR REPLACE TABLE data_staging AS
 SELECT * FROM TV_METADATA_FOR_TVCM_ADVERTISING_IN_JAPAN_KANTO.PUBLIC.CM_SAMPLE;---have typo in category, it have a cateRgory---
 
 
-
-
 --- a staging part, there we create a corespond for ERD tables ---
 
 --table for company--
@@ -262,3 +260,13 @@ INNER JOIN dim_time dt_start ON bl.start_datetime = dt_start.full_datetime
 INNER JOIN dim_time dt_end ON bl.end_datetime = dt_end.full_datetime
 INNER JOIN dim_time dt_first ON bl.first_broadcast_start = dt_first.full_datetime
 LEFT JOIN staging_log_audit la ON bl.cm_log_id = la.cm_log_id;
+
+--- Clean up staging tables ---
+DROP TABLE IF EXISTS staging_commercial;
+DROP TABLE IF EXISTS staging_brand;
+DROP TABLE IF EXISTS staging_broadcast_logs;
+DROP TABLE IF EXISTS staging_category;
+DROP TABLE IF EXISTS staging_company;
+DROP TABLE IF EXISTS staging_log_audit;
+DROP TABLE IF EXISTS staging_product;
+DROP TABLE IF EXISTS staging_station;
